@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clasificador de Imágenes de Resonancia Magnética</title>
+    <link rel="stylesheet" href="static/estilos.css">
+</head>
+<body>
+    <h1>CLASIFICADOR DE IMÁGENES DE RESONANCIA MAGNÉTICA</h1>
+
+    <div class="main-container">
+        <form method="POST" enctype="multipart/form-data">
+            <label for="file-upload" class="custom-file-upload">Seleccionar Imagen</label>
+            <input id="file-upload" type="file" name="image" accept="image/*" required onchange="updateFileName(this)">
+            <div id="file-name"></div>
+            <button type="submit">Clasificar Imagen</button>
+        </form>
+
+        {% if prediction %}
+            <div class="result">{{ prediction }}</div>
+        {% endif %}
+
+        {% if image_name %}
+            <div class="preview">
+                <img src="{{ url_for('static', filename='uploads/' ~ image_name) }}" alt="Imagen cargada">
+            </div>
+        {% endif %}
+
+        {% if probs %}
+            <h3 class="subtitle">Probabilidades por Clase</h3>
+            <div class="chart-container">
+                <img src="{{ url_for('static', filename='uploads/probabilidades.png') }}" alt="Gráfico de probabilidades" class="chart-img">
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Clase</th>
+                            <th>Probabilidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for clase, prob in probs.items() %}
+                        <tr>
+                            <td>{{ clase }}</td>
+                            <td>{{ (prob * 100) | round(2) }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function updateFileName(input) {
+            const fileName = input.files[0]?.name || '';
+            document.getElementById('file-name').textContent = fileName;
+        }
+    </script>
+</body>
+</html>
+
+
+
